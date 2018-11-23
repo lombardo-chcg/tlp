@@ -1,7 +1,7 @@
 package tlp
 
 import org.scalatest.FunSuite
-import shapeless.{Generic, HList, LabelledGeneric}
+import shapeless.{Generic, HList, HNil, LabelledGeneric, Witness, WitnessWith}
 import shapeless.ops.record.ToMap
 
 case class Cat(catName: String, weight: Double)
@@ -84,5 +84,38 @@ class ShapelessTest extends FunSuite {
       case (k,v) => k.toString.tail -> v
     }
     println(s"vanilla bat map created: $vanillaScalaMap, key type = ${vanillaScalaMap.keys.head.getClass}")
+  }
+
+  test("shapeless example 3 - lift literal values into types using Witness") {
+    type Amy = Witness.`"Amy"`.T
+    case class Restricted(name: Amy)
+
+    val test2 = Restricted("Amy")
+    assert(test2.name == "Amy")
+
+    // val test = Restricted("bob") fails to compile! type mismatch;
+    //    found   : String("bob")
+    //    required: String("Amy")
+
+    // alternative Syntax
+    val charlieWitness = Witness("Charlie")
+    type Charlie = charlieWitness.T
+    case class Restricted2(name: Charlie)
+    assert(Restricted2("Charlie").name == charlieWitness.value)
+
+    import shapeless.syntax.singleton._
+    // "narrow" Narrows a value to its singleton type.
+    val demo: Charlie = "Charlie".narrow
+    assert("Charlie".narrow == new String("Charlie"))
+    assert("Charlie".narrow == charlieWitness.value)
+
+    // use Witness types in a HList
+    type nameList = HList.`Amy, Charlie`.T
+    val ex: nameList = "Amy".narrow :: "Charlie".narrow :: HNil
+    assert(ex.head == "Amy")
+    assert(ex.tail == "Charlie".narrow :: HNil)
+    // these fail to compile
+    // val ex3: nameList = "Amy" :: "Charlie" :: HNil
+    // val ex2: nameList = "Charlie".narrow :: "Amy".narrow :: HNil
   }
 }
