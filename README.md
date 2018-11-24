@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/lombardo-chcg/tlp.svg?branch=master)](https://travis-ci.org/lombardo-chcg/tlp)
+
 # type-level playground
 
 a place to stash type-level programming learnings, tips and tricks
