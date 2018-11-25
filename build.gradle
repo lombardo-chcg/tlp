@@ -10,6 +10,12 @@ repositories {
     mavenCentral()
 }
 
+
+
+tasks.withType(ScalaCompile) {
+    scalaCompileOptions.additionalParameters = ["-language:experimental.macros"]
+}
+
 ext {
     scalaVersion = "2.12.7"
     scalacVersion = "2.12"
